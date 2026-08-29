@@ -22,12 +22,17 @@ def avg_age_calculator():
 def write_doc(data):
     """Append new entry to cohort CSV"""
     new_data = {
-        "userid":data["userid"],
-        "Age": data["Age"],
-        "bmi": data["bmi"],
-        "glucose": data["glucose"],
-        "hba1c": data["hba1c"],
-        "Risk_Level": data["Risk_Level"]
+        "Patient_id":data.Patient_id,
+        "Age": data.Age,
+        "Gender":data.Gender,
+        "Countery":data.Country,
+        "Height_cm":data.Height_cm,
+        "Weight_kg":data.Weight_kg,
+        "BMI": data.bmi,
+        "Waist_Circumference":data.Waist_Circumference,
+        "Blood_Glucose": data.Blood_Glucose,
+        "Hb1Ac": data.HbA1c
+        
     }
 
     # If file exists, append; else create new
