@@ -5,8 +5,8 @@ import pandas as pd
 import pycountry
 
 def main():
-    st.title("Interactive Matabolic Risk Dashboard And Calculator")
-    st.subheader("YOUR HEALTH, YOUR JOURNY")
+    st.title("Interactive Metabolic Risk Dashboard And Calculator")
+    st.subheader("YOUR HEALTH, YOUR JOURNEY")
     st.markdown("""
     <style>
     .card {
@@ -32,7 +32,6 @@ def main():
     """, unsafe_allow_html=True)
 
     cols = st.columns(3)
-
     with cols[0]:
         st.markdown("""
         <div class="card">
@@ -40,7 +39,6 @@ def main():
            <div class="hidden">Eating more fruits and vegetables daily lowers your risk of chronic diseases.</div>
        </div>
         """, unsafe_allow_html=True)
-
     with cols[1]:
         st.markdown("""
         <div class="card">
@@ -48,7 +46,6 @@ def main():
             <div class="hidden">Just 30 minutes of brisk walking can improve cardiovascular health and reduce stress.</div>
         </div>
         """, unsafe_allow_html=True)
-
     with cols[2]:
         st.markdown("""
         <div class="card">
@@ -57,38 +54,21 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-    # ✨ Motivational Quote
     st.write("---")
     st.markdown(
         "<div style='text-align:center; font-size:20px; color:#FF5733;'>💬 Small steps lead to big changes. Start today!</div>",
         unsafe_allow_html=True,
     )
-
-    # 🏃 Lifestyle Collage Section
     st.write("---")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.image("https://images.unsplash.com/photo-1690573313202-4493a7d02e9c?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", width=120)
-        st.caption("🍎 Healthy Eating")
-    with col2:
-        st.image("https://images.unsplash.com/photo-1728718248311-2fdb76913d94?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", width=170)
-        st.caption("🏃 Active Living")
-    with col3:
-        st.image("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1220&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", width=170)
-        st.caption("😴 Rest & Recovery")
 
-    # ✨ Motivational Quote
-    st.write("---")
+    # Tabs for Global Dashboard and Personal Calculator
     tab1, tab2 = st.tabs(["Global Dashboard", "Personal Calculator"])
-    with tab1:    
-        st.title("GLoBAL DATA")
+
+    with tab1:
+        st.title("GLOBAL DATA")
         doc_data = read_doc()
         doc_data["Risk_Level"] = doc_data.apply(Risk_assigner, axis=1)
-        # scatter_table(doc_data)
         avg = avg_age_calculator(doc_data)
-        # bar_chart(avg)
-        # box_table(doc_data)
-        # pi_chart(doc_data)
         col1, col2 = st.columns(2)
         with col1:
             box_table(doc_data)
@@ -99,6 +79,7 @@ def main():
             hexbin_plot(doc_data)
         with col2:
             pi_chart(doc_data)
+
     with tab2:
         st.title("PERSONAL METABOLIC CHECK")
         data = Input_Handler()
@@ -114,13 +95,17 @@ def main():
                 st.info("💡 Increase physical activity and monitor glucose regularly.")
             else:
                 st.success("✅ Maintain your current lifestyle and keep monitoring.")
-                write_doc(data)
+            write_doc(data)
         else:
             st.info("Fill the form and click Submit")
 
 def read_doc():
     try:
         df = pd.read_csv("_2.csv")
+        # Median imputation for required columns
+        for col in ["Height_cm", "Weight_kg", "Blood_Glucose", "HbA1c"]:
+            if col in df.columns:
+                df[col] = df[col].fillna(df[col].median())
         return df
     except Exception as e:
         print(f"Unexpected error: {e}")
@@ -129,12 +114,6 @@ def read_doc():
 def avg_age_calculator(data):
     avg_age = data.groupby("Risk_Level")["Age"].mean().to_dict()
     return avg_age
-
-def bmi_percentile(data, bmi):
-    try:
-        return (data["BMI"] < bmi).mean() * 100
-    except Exception:
-        return None
 
 def write_doc(data):
     new_data = {
@@ -157,10 +136,7 @@ def write_doc(data):
 def Input_Handler():
     Patient_ID = st.number_input("Enter your userid")
     Age = st.slider("Enter your age", min_value=1, max_value=120, value=5)
-    Gender = st.selectbox(
-    "Select your gender",
-    ["Male", "Female", "Other"]
-)
+    Gender = st.selectbox("Select your gender", ["Male", "Female", "Other"])
     countries = [c.name for c in pycountry.countries]
     Country = st.selectbox("Select your country", countries)
     Height_cm = st.slider("Enter your height in cm", min_value=0, max_value=300, value=170)
@@ -203,7 +179,12 @@ def Risk_Calculator(data):
         return "Moderate"
     else:
         return "Low"
-    
+
+def bmi_percentile(data, bmi):
+    try:
+        return (data["BMI"] < bmi).mean() * 100
+    except Exception:
+        return None
 
 def hexbin_plot(data):
     fig, ax = plt.subplots(figsize=(6,4))
@@ -234,10 +215,10 @@ def bar_chart(data):
 def box_table(data):
     fig, ax = plt.subplots()
     sns.boxenplot(data=data, x="HbA1c", y="Risk_Level", hue="Risk_Level", palette="Set1", ax=ax)
-    ax.set_title("hbA1c vs Risk_Level")
-    ax.set_xlabel("hbA1c")
+    ax.set_title("HbA1c vs Risk_Level")
+    ax.set_xlabel("HbA1c")
     ax.set_ylabel("Risk_Level")
     st.pyplot(fig)
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     main()
