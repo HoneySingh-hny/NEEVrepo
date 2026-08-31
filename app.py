@@ -88,6 +88,7 @@ def main():
         avg = avg_age_calculator(doc_data)
         col1, col2 = st.columns(2)
         with col1:
+            
             box_table(doc_data)
         with col2:
             bar_chart(avg)    
