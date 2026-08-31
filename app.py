@@ -136,7 +136,8 @@ def avg_age_calculator(data):
 
 def bmi_percentile(data, bmi):
     try:
-        return (data["BMI"] < bmi).mean() * 100
+        bmi_values = pd.to_numeric(data["BMI"], errors="coerce")
+        return (bmi_values < bmi).mean() * 100
     except Exception:
         return None
 
