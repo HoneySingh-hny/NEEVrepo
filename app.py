@@ -6,7 +6,7 @@ import pycountry
 
 def main():
     st.title("Interactive Matabolic Risk Dashboard And Calculator")
-    st.subheader("YOUR HEALTH, YOUR JOURNY")
+    st.subheader("YOUR HEALTH, YOUR JOURNEY")
     st.markdown("""
     <style>
     .card {
@@ -86,9 +86,6 @@ def main():
         doc_data["Risk_Level"] = doc_data.apply(Risk_assigner, axis=1)
         # scatter_table(doc_data)
         avg = avg_age_calculator(doc_data)
-        # bar_chart(avg)
-        # box_table(doc_data)
-        # pi_chart(doc_data)
         col1, col2 = st.columns(2)
         with col1:
             box_table(doc_data)
@@ -110,10 +107,16 @@ def main():
                 st.write(f"📊 Your BMI is higher than {percentile:.1f}% of the population")
             if risk == "High":
                 st.warning("⚠️ Consult a healthcare provider. Focus on diet and exercise.")
+                st.warning("- Reduce sugar intake.")
+                st.warning("- Increase daily physical activity.")
             elif risk == "Moderate":
                 st.info("💡 Increase physical activity and monitor glucose regularly.")
+                st.info("- Maintain consistent sleep/exercise.")
+                st.info("- Focus on portion control.")
             else:
                 st.success("✅ Maintain your current lifestyle and keep monitoring.")
+                st.success("- Stay active.")
+                st.success("- Regular preventive checkups.")
                 write_doc(data)
         else:
             st.info("Fill the form and click Submit")
